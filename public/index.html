@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat App</title>
+  </head>
+  <body>
+    <h1>Chat App</h1>
+    <div id="messages"></div>
+    <form>
+      <input type="text" id="message-input" />
+      <button type="submit">Send</button>
+    </form>
+
+    <script>
+      const ws = new WebSocket('ws://localhost:8080');
+      const messagesDiv = document.getElementById('messages');
+      const messageInput = document.getElementById('message-input');
+
+      ws.onmessage = (event) => {
+        console.log(event.data)
+      }
+      ws.onopen = () => {
+        console.log('WebSocket connection opened');
+
+        messageInput.addEventListener('keydown', (event) => {
+          if (event.keyCode === 13) { // Enter key
+            event.preventDefault();
+            const message = messageInput.value.trim();
+            if (message !== '') {
+              ws.send(JSON.stringify(message));
+              messageInput.value = '';
+            }
+          }
+        });
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket connection closed');
+      };
+    </script>
+  </body>
+</html>
